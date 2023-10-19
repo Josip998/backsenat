@@ -15,6 +15,7 @@ class Meeting extends Model
         'start_time',
         'location',
         'virtual',
+        'google_meet_link',
     ];
 
     protected $casts = [

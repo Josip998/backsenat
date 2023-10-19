@@ -51,6 +51,7 @@ class MeetingController extends Controller
             'start_time' => 'required|date',
             'location' => 'nullable',
             'virtual' => 'boolean',
+            'google_meet_link' => 'required',
         ]);
 
         $meeting = Meeting::create($data);
@@ -75,6 +76,7 @@ class MeetingController extends Controller
             'start_time' => 'required|date',
             'location' => 'nullable',
             'virtual' => 'boolean',
+            'google_meet_link' => 'required',
         ]);
     
         $meeting = Meeting::findOrFail($meetingId); // Find the meeting by ID
