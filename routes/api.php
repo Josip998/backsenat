@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\PointController;
 use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +21,22 @@ use App\Http\Controllers\MaterialController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+// Registration route
+Route::post('/register', [UserController::class, 'register']);
+
+// Login route
+Route::post('/login', [UserController::class, 'login']);
+
+// Logout route
+Route::middleware('auth:sanctum')->post('/logout', [UserController::class, 'logout']);
+
+
+
+
+
+
 
 Route::resource('meetings', MeetingController::class);
 
