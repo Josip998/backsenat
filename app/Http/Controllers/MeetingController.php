@@ -29,15 +29,33 @@ class MeetingController extends Controller
     }
 
     public function getTopLevelPoints($meetingId)
-{
-    // Fetch top-level points for the specified meeting
-    $topLevelPoints = Point::where('meeting_id', $meetingId)
-        ->whereNull('parent_id')
-        ->with(['subpoints', 'subpoints.materials', 'materials']) // Eager load subpoints and materials for both top-level points and subpoints
-        ->get();
-
-    return response()->json($topLevelPoints);
-}
+    {
+        // Fetch top-level points for the specified meeting
+        $topLevelPoints = Point::where('meeting_id', $meetingId)
+            ->whereNull('parent_id')
+            ->with(['subpoints', 'subpoints.materials', 'materials']) // Eager load subpoints and materials for both top-level points and subpoints
+            ->get();
+    
+        // Transform the materials data to include document URLs for top-level points and subpoints
+        $topLevelPoints->each(function ($point) {
+            $point->materials->transform(function ($material) {
+                $material->document_url = asset('storage/' . $material->filename);
+                return $material;
+            });
+    
+            // Iterate through subpoints for each top-level point
+            $point->subpoints->each(function ($subpoint) {
+                $subpoint->materials->transform(function ($material) {
+                    $material->document_url = asset('storage/' . $material->filename);
+                    return $material;
+                });
+            });
+        });
+    
+        return response()->json($topLevelPoints);
+    }
+    
+    
 
 
 

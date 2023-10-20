@@ -36,31 +36,20 @@ class PointController extends Controller
     public function show($id)
     {
         $point = Point::with(['subpoints', 'subpoints.materials', 'materials'])->find($id);
-
+    
         if (!$point) {
             return response()->json(['error' => 'Point not found'], 404);
         }
-
+    
+        // Transform the materials data to include document URLs
+        $point->materials->transform(function ($material) {
+            $material->document_url = asset('storage/' . $material->filename);
+            return $material;
+        });
+    
         return response()->json(['point' => $point]);
     }
-
-
-    // public function update(Request $request, Point $point)
-    // {
-    //     // Validate the incoming request data as needed
-    //     $validatedData = $request->validate([
-    //         'title' => 'required|string',
-    //         'details' => 'required|string',
-    //     ]);
-
-    //     // Update the point using the validated data
-    //     $point->update($validatedData);
-
-    //     // Optionally, you can handle updates to subpoints or materials here
-
-    //     // Return a response, e.g., a success message or the updated point
-    //     return response()->json(['message' => 'Point updated successfully', 'point' => $point]);
-    // }
+    
 
 
     public function store(Request $request)
@@ -135,10 +124,10 @@ class PointController extends Controller
     
         foreach ($files as $file) {
             // Generate a unique filename or customize it as needed
-            $customFilename = 'custom_' . time() . '_' . $file->getClientOriginalName();
+            $customFilename = $file->getClientOriginalName();
     
-            // Use the custom disk for storage
-            $path = $file->storeAs('custom-path', $customFilename, 'materials');
+            // Use the public disk for storage
+            $path = $file->storeAs('public', $customFilename);
     
             // Extract the original filename (name of the uploaded file)
             $originalFilename = $file->getClientOriginalName();
@@ -154,6 +143,7 @@ class PointController extends Controller
     
         return response()->json(['messages' => $materialMessages]);
     }
+    
 
 
 
@@ -254,10 +244,5 @@ class PointController extends Controller
         return response()->json($subpoint, 201);
     }
     
-    
 
-    
-    
-
-    // Implement update, delete, and show methods as needed.
 }

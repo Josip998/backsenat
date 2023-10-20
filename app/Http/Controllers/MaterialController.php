@@ -88,54 +88,30 @@ class MaterialController extends Controller
 
 
 
-
     public function uploadForPoint(Request $request, $point_id)
     {
         $this->validate($request, [
             'file' => 'required|file', // Allow all types of files
         ]);
-
+    
         $file = $request->file('file');
         $originalFilename = $file->getClientOriginalName();
-
+    
         // Generate a unique filename or customize it as needed
-        $customFilename = 'custom_' . time() . '_' . $originalFilename;
-
-        // Use the custom disk for storage
-        $path = $file->storeAs('custom-path', $customFilename, 'materials');
-
+        $customFilename = $originalFilename;
+    
+        // Use the public disk for storage
+        $path = $file->storeAs('public', $customFilename);
+    
         // Save the material to the materials table
         $material = Material::create([
             'filename' => $originalFilename,
             'file_path' => $path,
             'point_id' => $point_id,
         ]);
-
+    
         return response()->json($material, 201);
     }
+    
 
-    // public function uploadForSubpoint(Request $request, $subpoint)
-    // {
-    //     $this->validate($request, [
-    //         'file' => 'required|file', // Allow all types of files
-    //     ]);
-
-    //     $file = $request->file('file');
-    //     $originalFilename = $file->getClientOriginalName();
-
-    //     // Generate a unique filename or customize it as needed
-    //     $customFilename = 'custom_' . time() . '_' . $originalFilename;
-
-    //     // Use the custom disk for storage
-    //     $path = $file->storeAs('custom-path', $customFilename, 'materials');
-
-    //     // Save the material to the materials table
-    //     $material = Material::create([
-    //         'filename' => $originalFilename,
-    //         'file_path' => $path,
-    //         'point_id' => $subpoint->id,
-    //     ]);
-
-    //     return response()->json($material, 201);
-    // }
 }
